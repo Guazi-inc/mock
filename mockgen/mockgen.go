@@ -283,10 +283,10 @@ func (g *generator) Generate(pkg *model.Package, pkgName string, outputPackagePa
 			if path == outputPackagePath {
 				continue
 			}
-			g.p("%v %q", pkg, path)
+			g.p("%v %q", pkg, formatImportPath(path))
 		}
 		for _, path := range pkg.DotImports {
-			g.p(". %q", path)
+			g.p(". %q", formatImportPath(path))
 		}
 		g.out()
 		g.p(")")
@@ -299,6 +299,14 @@ func (g *generator) Generate(pkg *model.Package, pkgName string, outputPackagePa
 	}
 
 	return nil
+}
+
+func formatImportPath(path string) string {
+	idx := strings.Index(path, "/vendor/")
+	if idx > 0 {
+		return path[idx+8:]
+	}
+	return path
 }
 
 // The name of the mock type to use for the given interface identifier.
