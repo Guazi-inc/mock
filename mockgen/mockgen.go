@@ -72,6 +72,10 @@ func main() {
 		log.Fatalf("Loading input failed: %v", err)
 	}
 
+	if PkgEmpty(pkg) {
+		return
+	}
+
 	if *debugParser {
 		pkg.Print(os.Stdout)
 		return
@@ -79,6 +83,14 @@ func main() {
 
 	dst := os.Stdout
 	if len(*destination) > 0 {
+		dir := filepath.Dir(*destination)
+		_, err := os.Stat(dir)
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(dir, 0777); err != nil {
+				log.Fatalf("Failed create destination dir: %v", err)
+			}
+		}
+
 		f, err := os.Create(*destination)
 		if err != nil {
 			log.Fatalf("Failed opening destination file: %v", err)
@@ -131,6 +143,11 @@ func main() {
 		log.Fatalf("Failed writing to destination: %v", err)
 	}
 }
+
+func PkgEmpty(pkg *model.Package) bool {
+	return len(pkg.Interfaces) == 0
+}
+
 func parseMockNames(names string) map[string]string {
 	mocksMap := make(map[string]string)
 	for _, kv := range strings.Split(names, ",") {
