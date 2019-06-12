@@ -29,7 +29,7 @@ do
     do
 #      echo "$path/mocks/${gofile#*$path}"
       dir=`dirname $path/mocks/${gofile#*$path}`
-      if [ ! -d $dir ]; then mkdir -p $dir; fi && touch $path/mocks/${gofile#*$path} && mockgen -source=$gofile -destination $path/mocks/${gofile#*$path} -package `basename $dir` || exit 1
+      mockgen -source=$gofile -destination $path/mocks/${gofile#*$path} -package `basename $dir` || exit 1
     done
 done
 
